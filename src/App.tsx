@@ -1,5 +1,6 @@
 import { Provider as ToolkitProvider } from "react-redux";
 import { RouterProvider } from "react-router";
+import { Toaster } from "./components/ui/sonner";
 import { Router } from "./router/RouterBase";
 import { store } from "./store/store";
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <>
       <ToolkitProvider store={store}>
         <RouterProvider router={Router} />
+        <Toaster />
       </ToolkitProvider>
     </>
   );

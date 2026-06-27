@@ -59,4 +59,5 @@ export type WorkflowStoreType = {
   nodes: WorkflowNode[];
   edges: Edge[];
   selectedNodeId: string | null;
+  isDirty: boolean;
 };

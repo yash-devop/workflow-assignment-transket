@@ -10,7 +10,6 @@ export function DecisionNode({ data, selected }: WorkflowNode) {
       }`}
     >
       <Handle type="target" position={Position.Top} />
-
       <div className="mb-2 text-xs font-medium uppercase text-slate-500">
         DECISION
       </div>
@@ -22,7 +21,14 @@ export function DecisionNode({ data, selected }: WorkflowNode) {
         {decisionData.config?.operator}&{decisionData.config?.value}
       </div>
 
-      <Handle type="source" position={Position.Bottom} />
+      <div className="absolute bottom-0 left-10">
+        <span className="text-[8px]">TRUE</span>
+        <Handle type="source" position={Position.Bottom} id="true" />
+      </div>
+      <div className=" absolute bottom-0 right-10">
+        <span className="text-[8px]">FALSE</span>
+        <Handle type="source" position={Position.Bottom} id="false" />
+      </div>
     </div>
   );
 }

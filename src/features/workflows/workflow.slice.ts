@@ -40,15 +40,9 @@ const initialState: WorkflowStoreType = {
       position: { x: 370, y: 140 },
     },
   ],
-  edges: [
-    {
-      id: "n1-n2",
-      source: "n1",
-      target: "n2",
-      label: "Edge Label 1",
-    },
-  ],
+  edges: [],
   selectedNodeId: null,
+  isDirty: false,
 };
 const workflowSlice = createSlice({
   initialState,
@@ -99,14 +93,66 @@ const workflowSlice = createSlice({
       state,
       action: PayloadAction<NodeChange<WorkflowNode>[]>,
     ) => {
+      const userDrivenChangeTypes = ["position", "remove", "reset"];
+
+      console.log("action.payload", action.payload);
+      const hasUserDrivenChange = action.payload.some((change) =>
+        userDrivenChangeTypes.includes(change.type),
+      );
+
+      if (hasUserDrivenChange) {
+        state.isDirty = true;
+      }
       state.nodes = applyNodeChanges(action.payload, state.nodes);
     },
 
     onEdgeChange: (state, action: PayloadAction<EdgeChange<Edge>[]>) => {
+      alert("edge change");
+      const userDrivenChangeTypes = ["remove", "select", "reset"];
+      const hasUserDrivenChange = action.payload.some((change) =>
+        userDrivenChangeTypes.includes(change.type),
+      );
+
+      if (hasUserDrivenChange) {
+        state.isDirty = true;
+      }
+
       state.edges = applyEdgeChanges(action.payload, state.edges);
     },
     onConnect: (state, action: PayloadAction<Connection>) => {
-      state.edges = addEdge(action.payload, state.edges);
+      const connection = action.payload;
+      const newEdge = {
+        ...connection,
+        id: `${connection.source}-${connection.target}`,
+        label:
+          connection.sourceHandle === "true"
+            ? "TRUE"
+            : connection.sourceHandle === "false"
+              ? "FALSE"
+              : undefined,
+      };
+      state.isDirty = true;
+      state.edges = addEdge(newEdge, state.edges as any);
+    },
+
+    // persist the workfow data:
+
+    saveWorkflow: (state) => {
+      const workflow = {
+        nodes: state.nodes,
+        edges: state.edges,
+      };
+
+      localStorage.setItem("workflow", JSON.stringify(workflow));
+
+      state.isDirty = false;
+    },
+    loadWorkflow: (
+      state,
+      action: PayloadAction<Pick<WorkflowStoreType, "edges" | "nodes">>,
+    ) => {
+      state.nodes = action.payload.nodes;
+      state.edges = action.payload.edges;
     },
   },
 });
@@ -119,6 +165,8 @@ export const {
   deleteNode,
   selectNode,
   updateNode,
+  saveWorkflow,
+  loadWorkflow,
 } = workflowSlice.actions;
 
 export const WorkflowReducer = workflowSlice.reducer;
