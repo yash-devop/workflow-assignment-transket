@@ -1,5 +1,5 @@
 import { WorkflowNode, WorkflowStoreType } from "@/types/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import {
   addEdge,
   applyEdgeChanges,
@@ -14,17 +14,28 @@ const initialState: WorkflowStoreType = {
   nodes: [
     {
       id: "n1",
+      type: "trigger", // this type is related to our custom node rendering.
       data: {
-        nodeType: "trigger",
+        nodeType: "trigger", // i created this code level logics rendering.
         label: "Trigger Node Label 1",
+        config: {
+          name: "Trigger 1",
+          description: "This is my trigger 1",
+        },
       },
       position: { x: 100, y: 140 },
     },
     {
       id: "n2",
+      type: "decision",
       data: {
         nodeType: "decision",
         label: "Decision Node label 2",
+        config: {
+          field: "userType",
+          operator: "==",
+          value: "premium",
+        },
       },
       position: { x: 370, y: 140 },
     },
@@ -37,7 +48,7 @@ const initialState: WorkflowStoreType = {
       label: "Edge Label 1",
     },
   ],
-  selectedNodesId: null,
+  selectedNodeId: null,
 };
 const workflowSlice = createSlice({
   initialState,
@@ -56,12 +67,31 @@ const workflowSlice = createSlice({
       state.edges = state.edges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId,
       );
-      state.selectedNodesId = null;
+      state.selectedNodeId = null;
     },
 
-    selectNode: (state, action: PayloadAction<string>) => {
+    selectNode: (state, action: PayloadAction<string | null>) => {
       // when i click on any of the node , that node becomes my selected one
-      state.selectedNodesId = action.payload;
+      state.selectedNodeId = action.payload;
+    },
+
+    updateNode: (
+      state,
+      action: PayloadAction<{
+        id: string;
+        config: any;
+      }>,
+    ) => {
+      const node = state.nodes.find((node) => node.id === action.payload.id);
+
+      if (node) {
+        node.data.config = {
+          ...node.data.config,
+          ...action.payload.config,
+        };
+      }
+
+      state.selectedNodeId = null;
     },
 
     // change nodes:
@@ -88,6 +118,7 @@ export const {
   addNode,
   deleteNode,
   selectNode,
+  updateNode,
 } = workflowSlice.actions;
 
 export const WorkflowReducer = workflowSlice.reducer;

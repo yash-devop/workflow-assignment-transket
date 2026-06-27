@@ -1,3 +1,8 @@
+import { NodeSettingsSheet } from "@/components/node-settings-sheet";
+import { ActionNode } from "@/components/nodes/ActionNode";
+import { DecisionNode } from "@/components/nodes/DecisionNode";
+import { DelayNode } from "@/components/nodes/DelayNode";
+import { TriggerNode } from "@/components/nodes/TriggerNode";
 import {
   addNode,
   deleteNode,
@@ -6,9 +11,9 @@ import {
   onNodeChange,
   selectNode,
 } from "@/features/workflows/workflow.slice";
+import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/store";
 import { WorkflowNode } from "@/types/types";
-import { cn } from "@/utils/cn";
 import {
   Background,
   Connection,
@@ -20,13 +25,20 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 
+const customNodes = {
+  trigger: TriggerNode,
+  action: ActionNode,
+  decision: DecisionNode,
+  delay: DelayNode,
+};
+
 export const WorkflowSpacePage = () => {
-  const { edges, nodes, selectedNodesId } = useAppSelector(
+  const { edges, nodes, selectedNodeId } = useAppSelector(
     (state) => state.workflow,
   );
+
   const dispatch = useDispatch();
 
   const handleNodeChange = (changes: NodeChange<WorkflowNode>[]) => {
@@ -40,12 +52,14 @@ export const WorkflowSpacePage = () => {
     // onConnect runs when you connect edges to nodes.
     dispatch(onConnect(params));
   };
+
   return (
     <div className="w-screen h-screen">
       <ReactFlowProvider>
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          nodeTypes={customNodes}
           onNodesChange={handleNodeChange}
           onEdgesChange={handleEdgeChange}
           onConnect={handleEdgeConnect}
@@ -63,9 +77,11 @@ export const WorkflowSpacePage = () => {
               dispatch(
                 addNode({
                   id: crypto.randomUUID(),
+                  type: "trigger",
                   data: {
                     nodeType: "trigger",
-                    label: "Trigger added",
+                    label: "Trigger Node",
+                    config: null,
                   },
                   position: { x: Math.random() * 400, y: Math.random() * 200 },
                 }),
@@ -80,9 +96,11 @@ export const WorkflowSpacePage = () => {
               dispatch(
                 addNode({
                   id: crypto.randomUUID(),
+                  type: "decision",
                   data: {
                     nodeType: "decision",
-                    label: "Decision",
+                    label: "Decision Node",
+                    config: null,
                   },
                   position: { x: Math.random() * 400, y: Math.random() * 200 },
                 }),
@@ -97,9 +115,11 @@ export const WorkflowSpacePage = () => {
               dispatch(
                 addNode({
                   id: crypto.randomUUID(),
+                  type: "action",
                   data: {
                     nodeType: "action",
-                    label: "Decision",
+                    label: "Action Node",
+                    config: null,
                   },
                   position: { x: Math.random() * 400, y: Math.random() * 200 },
                 }),
@@ -114,9 +134,12 @@ export const WorkflowSpacePage = () => {
               dispatch(
                 addNode({
                   id: crypto.randomUUID(),
+                  type: "delay",
                   data: {
                     nodeType: "delay",
-                    label: "Decision",
+                    label: "Delay Node",
+
+                    config: null,
                   },
                   position: { x: Math.random() * 400, y: Math.random() * 200 },
                 }),
@@ -125,22 +148,11 @@ export const WorkflowSpacePage = () => {
           >
             Add Delay
           </button>
-          <button
-            className={cn(
-              `bg-blue-400 cursor-pointer`,
-              !selectedNodesId && "bg-neutral-500",
-            )}
-            onClick={() => {
-              if (!selectedNodesId) return;
-              dispatch(deleteNode(selectedNodesId));
-            }}
-          >
-            DELETE NODE
-          </button>
         </div>
         <Background />
         <Controls className="border border-neutral-300 bg-white" />
       </ReactFlowProvider>
+      <NodeSettingsSheet />
     </div>
   );
 };
