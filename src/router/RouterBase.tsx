@@ -1,5 +1,5 @@
 import { PageLayout } from "@/components/Layouts/PageLayout";
-import { LandingPage } from "@/pages/LandingPage";
+import { WorkflowSpacePage } from "@/pages/workflow";
 import { createBrowserRouter } from "react-router";
 export const Router = createBrowserRouter([
   {
@@ -9,7 +9,7 @@ export const Router = createBrowserRouter([
       {
         // path: "/",
         index: true,
-        element: <LandingPage />,
+        element: <WorkflowSpacePage />,
       },
     ],
   },

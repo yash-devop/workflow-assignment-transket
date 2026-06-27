@@ -1,10 +1,13 @@
-import React from "react";
+import { Provider as ToolkitProvider } from "react-redux";
 import { RouterProvider } from "react-router";
 import { Router } from "./router/RouterBase";
+import { store } from "./store/store";
 function App() {
   return (
     <>
-      <RouterProvider router={Router}></RouterProvider>
+      <ToolkitProvider store={store}>
+        <RouterProvider router={Router} />
+      </ToolkitProvider>
     </>
   );
 }
