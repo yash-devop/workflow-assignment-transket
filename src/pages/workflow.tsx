@@ -7,14 +7,15 @@ import { SaveProgress } from "@/components/save-progress";
 import { Toaster } from "@/components/ui/sonner";
 import {
   addNode,
-  loadWorkflow,
   onConnect,
   onEdgeChange,
   onNodeChange,
   selectNode,
 } from "@/features/workflows/workflow.slice";
+import { usePersistWorkflow } from "@/hooks/usePersistWorkflow";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { useAppSelector } from "@/store/store";
-import { WorkflowNode, WorkflowStoreType } from "@/types/types";
+import { WorkflowNode } from "@/types/types";
 import {
   Background,
   Connection,
@@ -26,9 +27,7 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 
 const customNodes = {
   trigger: TriggerNode,
@@ -39,8 +38,10 @@ const customNodes = {
 
 export const WorkflowSpacePage = () => {
   const { edges, nodes, isDirty } = useAppSelector((state) => state.workflow);
-
   const dispatch = useDispatch();
+
+  usePersistWorkflow();
+  useUnsavedChanges();
 
   const handleNodeChange = (changes: NodeChange<WorkflowNode>[]) => {
     dispatch(onNodeChange(changes));
@@ -54,22 +55,6 @@ export const WorkflowSpacePage = () => {
     // onConnect runs when you connect edges to nodes.
     dispatch(onConnect(params));
   };
-
-  // load the saved workflow
-  useEffect(() => {
-    const data = localStorage.getItem("workflow");
-
-    if (!data) return;
-
-    const workflow: Pick<WorkflowStoreType, "edges" | "nodes"> =
-      JSON.parse(data);
-
-    dispatch(loadWorkflow(workflow));
-
-    toast("Workflow loaded successfully");
-  }, []);
-
-  console.log("edges", edges);
 
   return (
     <div className="w-screen h-screen">
