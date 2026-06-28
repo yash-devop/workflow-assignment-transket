@@ -29,7 +29,9 @@ A visual workflow builder built using React Flow that allows users to create, co
 
 ```ts
 {
-  userType: "premium"
+  name: "Yash",
+  email: "yash@test.com",
+  plan: "premium",
 }
 ```
 
