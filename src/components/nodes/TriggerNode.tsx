@@ -1,3 +1,5 @@
+import { NODE_ACTIVE_STAGE } from "@/constants";
+import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/store";
 import { TriggerNodeData, WorkflowNode } from "@/types/types";
 import { Handle, Position } from "@xyflow/react";
@@ -8,27 +10,29 @@ export function TriggerNode({ data, selected, id }: WorkflowNode) {
   const isActiveExecution = id === currentNodeExecutionId;
   return (
     <div
-      className={`min-w-[220px] rounded-xl border bg-white p-4 shadow-sm ${
-        isActiveExecution
-          ? "border-red-500"
-          : selected
-            ? "border-blue-500"
-            : "border-slate-200"
-      }`}
+      className={cn(
+        `ring ring-neutral-400 min-w-52 max-w-52 shadow-sm shadow-neutral-400 bg-white`,
+        isActiveExecution && NODE_ACTIVE_STAGE.active,
+      )}
     >
       <Handle type="target" position={Position.Top} />
-
-      <div className="mb-2 text-xs font-medium uppercase text-slate-500">
-        Trigger
+      <div
+        className={cn(
+          `font-mono text-xs uppercase flex items-center justify-between border-neutral-300 py-3 px-2 bg-neutral-100`,
+          triggerData.config?.description && "border-b",
+          isActiveExecution && NODE_ACTIVE_STAGE.active,
+        )}
+      >
+        <span className="text-neutral-500 font-medium">Trigger</span>
+        <span className="text-black font-medium">
+          {triggerData.config?.name}
+        </span>
       </div>
-
-      <div className="text-sm font-semibold text-slate-900">
-        {triggerData.config?.name}
-      </div>
-      <div className="mt-1 text-xs text-slate-500">
-        {triggerData.config?.description}
-      </div>
-
+      {triggerData.config?.description && (
+        <div className="py-3 px-2 text-sm text-neutral-500 min-w-0 truncate">
+          <span className="">{triggerData.config?.description}</span>
+        </div>
+      )}
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

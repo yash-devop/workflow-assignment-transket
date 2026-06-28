@@ -84,7 +84,7 @@ const workflowSlice = createSlice({
           ...action.payload.config,
         };
       }
-
+      state.isDirty = true;
       state.selectedNodeId = null;
     },
 

@@ -2,7 +2,9 @@ import { setCurrentExecutionNode } from "@/features/workflows/workflow.slice";
 import { WorkflowNode } from "@/types/types";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { Edge } from "@xyflow/react";
-import { buildGraph } from "./build-graph";
+import { toast } from "sonner";
+import { getDelayTime } from "./delay-time";
+import { evaluateDecision } from "./evaluate-decision";
 
 export const runWorkflow = (
   nodes: WorkflowNode[],
@@ -10,26 +12,102 @@ export const runWorkflow = (
   dispatch: Dispatch<UnknownAction>,
 ) => {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
-  const graph = buildGraph(edges);
+
+  console.log("nodeMap", Array.from(nodeMap));
+
+  const graph: Record<string, Edge[]> = {};
+  edges.forEach((edge) => {
+    if (!graph[edge.source]) graph[edge.source] = [];
+    graph[edge.source].push(edge);
+  });
+
+  console.log("graph", graph);
 
   let current = nodes.find((n) => n.type === "trigger");
 
   const step = () => {
     if (!current) return;
 
-    // 1. highlight current node in UI
+    if (current.data.nodeType === "action") {
+      dispatch(setCurrentExecutionNode(current.id));
+      console.log("Executing action:", current.data.config);
+
+      setTimeout(() => {
+        const actionEdges = graph[current!.id] || [];
+        toast.success(
+          `Workflow Action ${current!.data.config?.actionName} Completed `,
+        );
+        if (actionEdges.length === 0) {
+          console.log(
+            "Workflow completed at:",
+            current!.data.config?.actionName,
+          );
+
+          dispatch(setCurrentExecutionNode(null));
+          return;
+        }
+
+        const next = nodeMap.get(actionEdges[0].target);
+        current = next || null;
+        step();
+      }, 500);
+
+      return;
+    }
+
     dispatch(setCurrentExecutionNode(current.id));
 
-    // 2. wait a bit (visual effect)
     setTimeout(() => {
-      const outgoingEdges = graph[current.id] || [];
+      const outgoingEdges = graph[current!.id] || [];
+      let nextEdge: Edge | null = null;
 
-      const nextEdge = outgoingEdges[0]; // TEMP: first path only
+      if (current?.data.nodeType === "decision") {
+        const result = evaluateDecision(current);
+        nextEdge =
+          outgoingEdges.find((e) =>
+            result ? e.label === "TRUE" : e.label === "FALSE",
+          ) ?? null;
+      } else {
+        nextEdge = outgoingEdges[0] || null;
+      }
 
-      if (!nextEdge) return;
+      if (!nextEdge) {
+        toast("No outgoing edge from node");
+        return;
+      }
 
-      current = nodeMap.get(nextEdge.target);
+      const nextNode = nodeMap.get(nextEdge.target);
 
+      if (!nextNode) {
+        toast("Invalid next node");
+        return;
+      }
+
+      if (nextNode.type === "delay") {
+        dispatch(setCurrentExecutionNode(nextNode.id));
+
+        const waitTime = getDelayTime(nextNode);
+        const delayEdges = graph[nextNode.id] || [];
+        const delayNextEdge = delayEdges[0];
+        const nextAfterDelay = delayNextEdge
+          ? nodeMap.get(delayNextEdge.target)
+          : null;
+
+        setTimeout(() => {
+          current = nextAfterDelay ?? null;
+          step();
+        }, waitTime);
+
+        return;
+      }
+
+      if (nextNode.data.nodeType === "action") {
+        current = nextNode;
+        step();
+        return;
+      }
+
+      current = nextNode;
       step();
     }, 800);
   };

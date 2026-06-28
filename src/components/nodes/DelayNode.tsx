@@ -1,25 +1,42 @@
 import { Handle, Position } from "@xyflow/react";
 import { DelayNodeData, WorkflowNode } from "@/types/types";
+import { useAppSelector } from "@/store/store";
+import { NODE_ACTIVE_STAGE } from "@/constants";
+import { cn } from "@/lib/utils";
 
-export function DelayNode({ data, selected }: WorkflowNode) {
+export function DelayNode({ data, selected, id }: WorkflowNode) {
   const delayData = data as DelayNodeData;
+  const { currentNodeExecutionId } = useAppSelector((state) => state.workflow);
+
+  const isActiveExecution = id === currentNodeExecutionId;
 
   return (
     <div
-      className={`min-w-[220px] rounded-xl border bg-white p-4 shadow-sm ${
-        selected ? "border-blue-500" : "border-slate-200"
-      }`}
+      className={cn(
+        `ring ring-neutral-400 min-w-52 max-w-52 shadow-sm shadow-neutral-400 bg-white`,
+        isActiveExecution && NODE_ACTIVE_STAGE.active,
+      )}
     >
       <Handle type="target" position={Position.Top} />
-
-      <div className="mb-2 text-xs font-medium uppercase text-slate-500">
-        Delay
+      <div
+        className={cn(
+          `font-mono text-xs  flex items-center justify-between border-neutral-300 py-3 px-2 bg-neutral-100`,
+          isActiveExecution && NODE_ACTIVE_STAGE.active,
+        )}
+      >
+        <span className="text-neutral-500 font-medium uppercase">DELAY</span>
+        <h2 className="text-xs text-neutral-500">
+          {delayData.config && "~"}
+          <span className="text-black font-semibold font-sans text-sm pr-0.5">
+            {delayData.config?.duration}
+          </span>
+          {delayData.config?.unit === "seconds"
+            ? "sec"
+            : delayData.config?.unit === "minutes"
+              ? "min"
+              : "ms"}
+        </h2>
       </div>
-
-      <div className="text-sm font-semibold text-slate-900">
-        {delayData.config?.duration} {delayData.config?.unit}
-      </div>
-
       <Handle type="source" position={Position.Bottom} />
     </div>
   );

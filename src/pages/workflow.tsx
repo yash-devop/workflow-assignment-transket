@@ -56,8 +56,77 @@ export const WorkflowSpacePage = () => {
     dispatch(onConnect(params));
   };
 
+  const addTrigger = () => {
+    dispatch(
+      addNode({
+        id: `trigger-${crypto.randomUUID()}`,
+        type: "trigger",
+        data: {
+          nodeType: "trigger",
+          label: "Trigger Node",
+          config: null,
+        },
+        position: {
+          x: Math.random() * 400,
+          y: Math.random() * 200,
+        },
+      }),
+    );
+  };
+  const addDecision = () => {
+    dispatch(
+      addNode({
+        id: `decision-${crypto.randomUUID()}`,
+        type: "decision",
+        data: {
+          nodeType: "decision",
+          label: "Decision Node",
+          config: null,
+        },
+        position: {
+          x: Math.random() * 400,
+          y: Math.random() * 200,
+        },
+      }),
+    );
+  };
+
+  const addAction = () => {
+    dispatch(
+      addNode({
+        id: `action-${crypto.randomUUID()}`,
+        type: "action",
+        data: {
+          nodeType: "action",
+          label: "Action Node",
+          config: null,
+        },
+        position: {
+          x: Math.random() * 400,
+          y: Math.random() * 200,
+        },
+      }),
+    );
+  };
+  const addDelay = () => {
+    dispatch(
+      addNode({
+        id: `delay-${crypto.randomUUID()}`,
+        type: "delay",
+        data: {
+          nodeType: "delay",
+          label: "Delay Node",
+          config: null,
+        },
+        position: {
+          x: Math.random() * 400,
+          y: Math.random() * 200,
+        },
+      }),
+    );
+  };
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen flex">
       <ReactFlowProvider>
         <ReactFlow
           nodes={nodes}
@@ -73,102 +142,54 @@ export const WorkflowSpacePage = () => {
           deleteKeyCode={"Delete"}
           fitView
         >
-          <div className="fixed top-0 z-10 space-x-4">
-            <button
-              className="bg-red-400 "
-              onClick={() => {
-                dispatch(
-                  addNode({
-                    id: crypto.randomUUID(),
-                    type: "trigger",
-                    data: {
-                      nodeType: "trigger",
-                      label: "Trigger Node",
-                      config: null,
-                    },
-                    position: {
-                      x: Math.random() * 400,
-                      y: Math.random() * 200,
-                    },
-                  }),
-                );
-              }}
-            >
-              ADD Trigger
-            </button>
-            <button
-              className="bg-red-400"
-              onClick={() => {
-                dispatch(
-                  addNode({
-                    id: crypto.randomUUID(),
-                    type: "decision",
-                    data: {
-                      nodeType: "decision",
-                      label: "Decision Node",
-                      config: null,
-                    },
-                    position: {
-                      x: Math.random() * 400,
-                      y: Math.random() * 200,
-                    },
-                  }),
-                );
-              }}
-            >
-              Add Decision
-            </button>
-            <button
-              className="bg-red-400"
-              onClick={() => {
-                dispatch(
-                  addNode({
-                    id: crypto.randomUUID(),
-                    type: "action",
-                    data: {
-                      nodeType: "action",
-                      label: "Action Node",
-                      config: null,
-                    },
-                    position: {
-                      x: Math.random() * 400,
-                      y: Math.random() * 200,
-                    },
-                  }),
-                );
-              }}
-            >
-              Add Action
-            </button>
-            <button
-              className="bg-red-400"
-              onClick={() => {
-                dispatch(
-                  addNode({
-                    id: crypto.randomUUID(),
-                    type: "delay",
-                    data: {
-                      nodeType: "delay",
-                      label: "Delay Node",
-
-                      config: null,
-                    },
-                    position: {
-                      x: Math.random() * 400,
-                      y: Math.random() * 200,
-                    },
-                  }),
-                );
-              }}
-            >
-              Add Delay
-            </button>
+          <div className="fixed bottom-5 left-1/2 z-10 -translate-x-1/2">
+            <div className="flex items-center gap-1 rounded-[14px] border border-neutral-200 bg-white p-1.5 shadow-md">
+              {[
+                {
+                  label: "Trigger",
+                  color: "#378ADD",
+                  nodeType: "trigger",
+                  onClick: addTrigger,
+                },
+                {
+                  label: "Decision",
+                  color: "#7F77DD",
+                  nodeType: "decision",
+                  onClick: addDecision,
+                },
+                {
+                  label: "Action",
+                  color: "#1D9E75",
+                  nodeType: "action",
+                  onClick: addAction,
+                },
+                {
+                  label: "Delay",
+                  color: "#BA7517",
+                  nodeType: "delay",
+                  onClick: addDelay,
+                },
+              ].map(({ label, color, onClick }) => (
+                <button
+                  key={label}
+                  onClick={onClick}
+                  className="flex items-center gap-2 rounded-[10px] px-3 py-1.5 text-sm font-medium text-neutral-800 transition hover:bg-neutral-100"
+                >
+                  <span
+                    className="h-2 w-2 rounded-full shrink-0"
+                    style={{ background: color }}
+                  />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
           <Background />
           <Controls className="border border-neutral-300 bg-white" />
         </ReactFlow>
         <Toaster />
       </ReactFlowProvider>
+      {/* <div className="w-[600px] bg-red-400 h-full">uo</div> */}
       <NodeSettingsSheet />
       <WorkflowExecutor />
       {isDirty && <SaveProgress />}

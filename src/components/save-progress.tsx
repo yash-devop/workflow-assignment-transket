@@ -12,7 +12,7 @@ export const SaveProgress = () => {
     toast.success("Workflow saved successfully!");
   };
   return (
-    <div className="fixed bottom-2 left-1/2 -translate-x-1/2 border border-yellow-500 p-4 flex flex-col gap-3 bg-yellow-50 items-center select-none">
+    <div className="fixed bottom-18 left-1/2 -translate-x-1/2 border border-yellow-500 p-4 flex flex-col gap-3 bg-yellow-50 items-center select-none">
       <span className="text-xs text-yellow-700">
         Save your progress so you can continue later.
       </span>

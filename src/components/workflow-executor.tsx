@@ -8,22 +8,21 @@ export const WorkflowExecutor = () => {
   const { edges, nodes } = useAppSelector((state) => state.workflow);
   const dispatch = useDispatch();
   const handleRunWorkflow = () => {
+    toast.success("Workflow started");
     const result = validateWorkflow(nodes, edges);
 
     if (!result.isValid) {
       console.log(result.errors);
-      toast(result.errors.join("\n")); // temporary UI
+      toast(result.errors.join("\n"));
       return;
     }
 
-    alert("Yeah now can runWORKFLOW");
-    // if valid → start execution
     runWorkflow(nodes, edges, dispatch);
   };
   return (
     <div
       onClick={handleRunWorkflow}
-      className="fixed top-10 bg-red-400 left-3 p-2"
+      className="fixed bottom-5.5 bg-blue-50 border border-blue-500 text-blue-500 left-1/2 z-10 translate-x-52 py-2 px-4 select-none cursor-pointer rounded-[10px] active:scale-[0.98]"
     >
       Run workflow
     </div>
