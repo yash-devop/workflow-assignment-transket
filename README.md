@@ -20,6 +20,19 @@ A visual workflow builder built using React Flow that allows users to create, co
 - Active execution highlighting
 - Delete nodes using keyboard interaction
 
+## Assumptions :
+
+* Decision nodes use a simulated execution context during workflow execution.
+* In a real workflow engine, this data would come from trigger payloads (API/webhook events) or previous node outputs.
+* Since the provided requirements only include Trigger name and description, runtime input handling is not implemented.
+* Example context used for simulation:
+
+```ts
+{
+  userType: "premium"
+}
+```
+
 
 # Setup Instructions
 
