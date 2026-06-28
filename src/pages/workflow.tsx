@@ -5,6 +5,7 @@ import { DelayNode } from "@/components/nodes/DelayNode";
 import { TriggerNode } from "@/components/nodes/TriggerNode";
 import { SaveProgress } from "@/components/save-progress";
 import { Toaster } from "@/components/ui/sonner";
+import { WorkflowExecutor } from "@/components/workflow-executor";
 import {
   addNode,
   onConnect,
@@ -47,7 +48,6 @@ export const WorkflowSpacePage = () => {
     dispatch(onNodeChange(changes));
   };
   const handleEdgeChange = (changes: EdgeChange<Edge>[]) => {
-    alert("trigg");
     dispatch(onEdgeChange(changes));
   };
 
@@ -170,6 +170,7 @@ export const WorkflowSpacePage = () => {
         <Toaster />
       </ReactFlowProvider>
       <NodeSettingsSheet />
+      <WorkflowExecutor />
       {isDirty && <SaveProgress />}
     </div>
   );

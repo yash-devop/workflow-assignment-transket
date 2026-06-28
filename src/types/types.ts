@@ -60,4 +60,6 @@ export type WorkflowStoreType = {
   edges: Edge[];
   selectedNodeId: string | null;
   isDirty: boolean;
+  currentNodeExecutionId?: string;
+  isRunning?: boolean;
 };

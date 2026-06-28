@@ -107,7 +107,6 @@ const workflowSlice = createSlice({
     },
 
     onEdgeChange: (state, action: PayloadAction<EdgeChange<Edge>[]>) => {
-      alert("edge change");
       const userDrivenChangeTypes = ["remove", "select", "reset"];
       const hasUserDrivenChange = action.payload.some((change) =>
         userDrivenChangeTypes.includes(change.type),
@@ -154,6 +153,12 @@ const workflowSlice = createSlice({
       state.nodes = action.payload.nodes;
       state.edges = action.payload.edges;
     },
+    setCurrentExecutionNode: (state, action) => {
+      state.currentNodeExecutionId = action.payload;
+    },
+    startExecution: (state) => {
+      state.isRunning = true;
+    },
   },
 });
 
@@ -167,6 +172,8 @@ export const {
   updateNode,
   saveWorkflow,
   loadWorkflow,
+  setCurrentExecutionNode,
+  startExecution,
 } = workflowSlice.actions;
 
 export const WorkflowReducer = workflowSlice.reducer;
