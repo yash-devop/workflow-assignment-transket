@@ -22,7 +22,7 @@ export const WorkflowExecutor = () => {
   return (
     <div
       onClick={handleRunWorkflow}
-      className="fixed bottom-5.5 bg-blue-50 border border-blue-500 text-blue-500 left-1/2 z-10 translate-x-52 py-2 px-4 select-none cursor-pointer rounded-[10px] active:scale-[0.98]"
+      className="fixed bottom-5.5 bg-blue-50 border border-blue-500 text-blue-500 left-1/2 z-10 translate-x-52 py-2 px-4 select-none cursor-pointer rounded-[10px] active:scale-[0.98] text-sm"
     >
       Run workflow
     </div>
